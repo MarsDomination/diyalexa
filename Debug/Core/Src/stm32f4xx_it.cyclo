@@ -8,5 +8,5 @@
 ../Core/Src/stm32f4xx_it.c:176:6:PendSV_Handler	1
 ../Core/Src/stm32f4xx_it.c:189:6:SysTick_Handler	1
 ../Core/Src/stm32f4xx_it.c:210:6:DMA1_Stream3_IRQHandler	1
-../Core/Src/stm32f4xx_it.c:223:6:HAL_I2S_RxHalfCpltCallback	3
+../Core/Src/stm32f4xx_it.c:223:6:HAL_I2S_RxHalfCpltCallback	2
 ../Core/Src/stm32f4xx_it.c:234:6:HAL_I2S_RxCpltCallback	3

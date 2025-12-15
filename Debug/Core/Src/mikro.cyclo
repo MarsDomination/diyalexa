@@ -1,4 +1,4 @@
-../Core/Src/mikro.c:36:6:HAL	1
-../Core/Src/mikro.c:40:6:getSamples	3
-../Core/Src/mikro.c:86:6:process_audio_buffer	3
-../Core/Src/mikro.c:116:7:LED_ansteuern	3
+../Core/Src/mikro.c:40:6:HAL	1
+../Core/Src/mikro.c:45:6:getSamples	3
+../Core/Src/mikro.c:69:7:process_audio_buffer	3
+../Core/Src/mikro.c:141:7:LED_ansteuern	1

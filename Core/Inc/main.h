@@ -58,7 +58,9 @@ extern volatile bool recording_finished;
 void Error_Handler(void);
 
 /* USER CODE BEGIN EFP */
-void gradualLightUp(int lights);
+
+void LightUp(int lights);
+
 
 /* USER CODE END EFP */
 

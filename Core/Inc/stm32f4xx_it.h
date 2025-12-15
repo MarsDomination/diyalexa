@@ -1,4 +1,4 @@
-/* USER CODE BEGIN Header */
+/* USE CODE BEGIN Header */
 /**
   ******************************************************************************
   * @file    stm32f4xx_it.h

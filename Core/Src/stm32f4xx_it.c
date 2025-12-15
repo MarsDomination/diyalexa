@@ -224,9 +224,9 @@ void HAL_I2S_RxHalfCpltCallback(I2S_HandleTypeDef *hi2s)
 {
 	printf("callback half\r\n");
     // Check if the correct peripheral triggered the interrupt and if recording is ongoing
-    if (hi2s == &hi2s && !recording_finished) {
+    if (!recording_finished) {
         // Process the first half of the circular buffer
-        process_audio_buffer(0, &hi2s);
+        process_audio_buffer(0, hi2s);
     }
 }
 
@@ -237,7 +237,7 @@ void HAL_I2S_RxCpltCallback(I2S_HandleTypeDef *hi2s)
     // Check if the correct peripheral triggered the interrupt and if recording is ongoing
     if (hi2s == &hi2s && !recording_finished) {
         // Process the second half of the circular buffer
-        process_audio_buffer(DMA_HALF_SIZE, &hi2s);
+        process_audio_buffer(DMA_HALF_SIZE, hi2s);
     }
 }
 

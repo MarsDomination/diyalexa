@@ -67,7 +67,7 @@ PCD_HandleTypeDef hpcd_USB_OTG_FS;
 
 // 1 second of audio at 16 kHz = 16000 final samples
 //constexpr uint32_t PCM_SAMPLES_PER_SEC = 16000;
-volatile bool recording_finished = true;
+volatile bool recording_finished = false;
 TIM_HandleTypeDef* TIMER = &htim4;
 
 
@@ -192,11 +192,12 @@ int main(void)
 	 		  recording_finished= false;
 	 	      }
 
-
+	  /*
 		 gradualLightUp(10);
 		 HAL_Delay(1000);
 		 gradualLightDown();
 		 HAL_Delay(1000);
+		 */
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
@@ -577,6 +578,15 @@ void gradualLightDown() {
 			HAL_Delay(1000);
 		}
 	}
+
+void LightUp(int lights) {
+		turnOffAllSegments();
+
+		for(int i = 0; i < lights; i++) {
+			HAL_GPIO_WritePin(segments[i].port, segments[i].pin, GPIO_PIN_SET);
+		}
+	}
+
 
 
 

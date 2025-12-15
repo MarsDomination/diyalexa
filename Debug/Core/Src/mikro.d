@@ -33,7 +33,7 @@ Core/Src/mikro.o: ../Core/Src/mikro.c ../Core/Inc/mikro.h \
  ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_pcd.h \
  ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_ll_usb.h \
  ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_pcd_ex.h \
- ../Core/Inc/stm32f4xx_it.h ../Core/Inc/main.h
+ ../Core/Inc/stm32f4xx_it.h ../Core/Inc/main.h ../Core/Inc/funk.h
 ../Core/Inc/mikro.h:
 ../Core/Inc/main.h:
 ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal.h:
@@ -72,3 +72,4 @@ Core/Src/mikro.o: ../Core/Src/mikro.c ../Core/Inc/mikro.h \
 ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_pcd_ex.h:
 ../Core/Inc/stm32f4xx_it.h:
 ../Core/Inc/main.h:
+../Core/Inc/funk.h:
