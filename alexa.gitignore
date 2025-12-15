@@ -1,0 +1,26 @@
+# Build directories
+Debug/
+Release/
+
+# Object files
+*.o
+*.su
+*.d
+*.asm
+
+# Executables
+*.elf
+*.hex
+*.bin
+*.map
+
+# IDE cache
+.metadata/
+.settings/org.eclipse.cdt.managedbuilder.core.prefs
+
+# CubeIDE generated files
+*.launch
+
+# OS files
+.DS_Store
+Thumbs.db
