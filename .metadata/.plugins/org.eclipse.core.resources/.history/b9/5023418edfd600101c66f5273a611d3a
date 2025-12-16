@@ -1,0 +1,26 @@
+/*
+ * mikro.h
+ *
+ *  Created on: Dec 11, 2025
+ *      Author: gothi
+ */
+
+#ifndef INC_MIKRO_H_
+#define INC_MIKRO_H_
+
+
+
+#endif /* INC_MIKRO_H_ */
+
+#include "main.h"
+#include "stm32f4xx_it.h"
+// DMA Input Buffer size in 16-bit Half Words (for 1 second):
+// 16000 * 4 (*2 for 2 16 bit and *2 for unused right channel) * 2 (Two Halves of Buffer) = 128000
+#define I2S_DMA_BUF_SIZE 4096 	//PCM_SAMPLES_PER_SEC * 8;
+#define DMA_HALF_SIZE = I2S_DMA_BUF_SIZE / 2
+
+
+//Audio Processing Function
+void process_audio_buffer(uint32_t offset, I2S_HandleTypeDef* hi2s2);
+void HAL (I2S_HandleTypeDef* hi2s2);
+void getSamples ();

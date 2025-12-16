@@ -1,0 +1,10 @@
+08:55:32 **** Build of configuration Debug for project Stecker ****
+make -j16 all 
+arm-none-eabi-size  Stecker.elf 
+   text	   data	    bss	    dec	    hex	filename
+  15016	     12	   3532	  18560	   4880	Stecker.elf
+Finished building: default.size.stdout
+ 
+
+08:55:33 Build Finished. 0 errors, 0 warnings. (took 1s.133ms)
+

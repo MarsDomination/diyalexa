@@ -1,0 +1,138 @@
+/*
+ * mikro.c
+ *
+ *  Created on: Dec 11, 2025
+ *      Author: gothi
+ */
+#include "mikro.h"
+#include "string.h"
+#include "main.h"
+#include "funk.h"
+
+#include <stdint.h>
+#include <stdbool.h>
+#include <stdlib.h>
+
+#define PCM_SAMPLES_PER_SEC 16000
+
+// DMA Input Buffer size in 16-bit Half Words (for 1 second):
+// 16000 * 4 (*2 for 2 16 bit and *2 for unused right channel) * 2 (Two Halves of Buffer) = 128000
+#define I2S_DMA_BUF_SIZE 1000 	//PCM_SAMPLES_PER_SEC * 8;
+const uint32_t DMA_HALF_SIZE = I2S_DMA_BUF_SIZE / 2;
+#define MAX_MIKRO 8000
+const uint32_t STEP = MAX_MIKRO / 10;
+
+#define SCHWELLWERT 6500
+
+
+// DMA Input Buffer: Stores the raw 16-bit data read by DMA.
+static volatile uint16_t inputBuffer[I2S_DMA_BUF_SIZE*2] = {0};
+
+// Processed Output Array: Stores the final 16-bit mono PCM samples.
+static int16_t pcmSamples[PCM_SAMPLES_PER_SEC] = {0};
+
+// Index tracker and state flag
+//extern volatile bool recording_finished;
+volatile uint32_t pcm_index = 0;
+volatile bool stecker_an = false;
+
+
+void HAL (I2S_HandleTypeDef* hi2s2) {
+	HAL_I2S_Receive_DMA(hi2s2, (uint16_t*)inputBuffer, I2S_DMA_BUF_SIZE);
+}
+
+
+void getSamples () {
+	int16_t max_volume = 0;
+	uint32_t TimeBegin_ms = HAL_GetTick();
+		 		  for (int i = 0; i < PCM_SAMPLES_PER_SEC; i++)
+		 		  {
+		 			  int numLED = abs(pcmSamples[i]);
+		 			  LED_ansteuern(numLED);
+		 		    // Check if it surpasses the threshold
+		 		    if (abs(pcmSamples[i]) > SCHWELLWERT)
+		 		    {
+		 		        max_volume = abs(pcmSamples[i]);
+		 		        stecker_schalten();
+		 		    	HAL_GPIO_WritePin(LD1_GPIO_Port, LD1_Pin, GPIO_PIN_SET);
+		 		    }
+		 		  }
+	uint32_t TimePassed_ms = TimeBegin_ms - HAL_GetTick();
+	LED_ansteuern(MAX_MIKRO);
+
+}
+
+//brief Processes Half of raw I2S data from the DMA buffer.
+	//param offset Starting index in inputBuffer (0 for half, DMA_HALF_SIZE for full).
+
+
+	void process_audio_buffer(uint32_t offset, I2S_HandleTypeDef* hi2s2)
+	{
+	    // The number of 16-bit Half Words to process in this Half
+		const uint32_t half_size = DMA_HALF_SIZE;
+
+	    // Loop through the Half, stepping by 4 (2*16bit words for the sample + 2*16bit words for the right channel).
+		//pcm_index = 0;
+		for (uint32_t i = 0; i < half_size; i += 4) {
+
+	        if (pcm_index < PCM_SAMPLES_PER_SEC) {
+
+	            // 1. Reconstruct 32-bit Frame
+	            uint32_t mergedValue = (inputBuffer[offset + i ] << 16) | inputBuffer[offset + i + 1];
+	            // 2. Extract 18-bit Sample and convert to signed 16-bit integer.
+	            int16_t finalSample = (int16_t)(mergedValue >> 14);
+
+	            // 3. Store the clean Mono Sample
+	            pcmSamples[pcm_index] = finalSample;
+	            pcm_index++;
+	        }
+	        else {
+	                        // Stop recording once 16000 samples have been collected.
+	                        recording_finished = true;
+	                        HAL_I2S_DMAStop(hi2s2);
+	                        getSamples(); // Exit the loop
+	                    }
+	                }
+	}
+
+/*
+void process_audio_buffer(uint32_t offset, I2S_HandleTypeDef* hi2s2)
+{
+    // process half-buffer
+    for (uint32_t i = 0; i < DMA_HALF_SIZE; i += 4) {
+
+        if (pcm_index >= PCM_SAMPLES_PER_SEC) {
+            recording_finished = true;
+            HAL_I2S_DMAStop(hi2s2);
+            return;
+        }
+
+        // LEFT channel is stored in halfwords [0] and [1]
+        uint16_t low  = inputBuffer[offset + i];
+        uint16_t high = inputBuffer[offset + i + 1];
+
+        // Merge into 32-bit I2S frame
+        uint32_t frame32 = ((uint32_t)high << 16) | low;
+
+        // Shift according to spec: discard lower 14 bits
+        int32_t sample18 = ((int32_t)frame32) >> 14;
+
+        // Convert 18-bit signed → 16-bit signed PCM
+        // (sample18 already sign-extended because >> is arithmetic)
+        int16_t finalSample = (int16_t)sample18;
+
+        pcmSamples[pcm_index++] = finalSample;
+    }
+}
+*/
+
+	void LED_ansteuern (int messwert) {
+		int lights = (messwert * 10)/MAX_MIKRO;
+		LightUp(lights);
+		return;
+
+	}
+
+
+
+

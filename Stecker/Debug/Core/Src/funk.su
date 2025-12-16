@@ -1,0 +1,3 @@
+../Core/Src/funk.c:14:6:transmit	16	static
+../Core/Src/funk.c:26:6:sendSequence	32	static
+../Core/Src/funk.c:48:6:delay350Microseconds	24	static
