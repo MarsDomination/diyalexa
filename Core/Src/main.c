@@ -69,7 +69,7 @@ PCD_HandleTypeDef hpcd_USB_OTG_FS;
 //constexpr uint32_t PCM_SAMPLES_PER_SEC = 16000;
 volatile bool recording_finished = false;
 TIM_HandleTypeDef* TIMER = &htim4;
-
+UART_HandleTypeDef* display =  &huart3;
 
 
 // declare pins
@@ -83,7 +83,7 @@ typedef struct {
 Segment_t segments[10] = {
 		{GPIOA, GPIO_PIN_3, 0}, //A0 - A
 		{GPIOC, GPIO_PIN_0, 0}, //A1 - B
-		{GPIOC, GPIO_PIN_2, 0}, //A2 - C -> A7
+		{GPIOC, GPIO_PIN_3, 0}, //A2 - C -> A7
 		{GPIOF, GPIO_PIN_3, 0}, //A3 - D
 		{GPIOF, GPIO_PIN_5, 0}, //A4 - E
 		{GPIOF, GPIO_PIN_10, 0}, //A5 - F
@@ -112,6 +112,7 @@ static void MX_I2S2_Init(void);
 // declare light functions
 //void gradualLightUp(void);
 void gradualLightDown(void);
+void gradualLightUp();
 void turnOffAllSegments(void);
 
 /* USER CODE END PFP */
@@ -163,14 +164,13 @@ int main(void)
    //HAL_I2S_Receive_DMA(&hi2s2, (uint16_t*)inputBuffer, I2S_DMA_BUF_SIZE);
    HAL(&hi2s2);
 
+    sendSequence("111111000010");
 
-  //sendSequence("111111000010");
+    HAL_GPIO_WritePin(GPIOB, GPIO_PIN_14, GPIO_PIN_SET); // LED2 dauerhaft an
+    HAL_Delay(5000);
 
-    //HAL_GPIO_WritePin(GPIOB, GPIO_PIN_14, GPIO_PIN_SET); // LED2 dauerhaft an
-    //HAL_Delay(5000);
-
-    //sendSequence("111111000001");
-    //HAL_GPIO_WritePin(GPIOB, GPIO_PIN_14, GPIO_PIN_RESET); // LED2 dauerhaft aus
+    sendSequence("111111000001");
+    HAL_GPIO_WritePin(GPIOB, GPIO_PIN_14, GPIO_PIN_RESET); // LED2 dauerhaft aus
 
     //recording_finished = true;
   /* USER CODE END 2 */
@@ -184,20 +184,20 @@ int main(void)
 	 		  //HAL_GPIO_WritePin(LD1_GPIO_Port, LD1_Pin, GPIO_PIN_SET);
 	 		  //const char *message = "Recording Ended.\r\n";
 	 		  // Ensure huart2 is available and transmit the message.
-	 		 // HAL_UART_Transmit(&huart2, (uint8_t*)message, strlen(message), 100);
-	 		  //std::cout<<"recording finished\r\n";
+
 
 
 	 		  getSamples();
 	 		  recording_finished= false;
 	 	      }
 
-	  /*
+/*
 		 gradualLightUp(10);
 		 HAL_Delay(1000);
 		 gradualLightDown();
 		 HAL_Delay(1000);
 		 */
+
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */

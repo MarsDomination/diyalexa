@@ -13,7 +13,7 @@
 #include <stdbool.h>
 #include <stdlib.h>
 
-#define PCM_SAMPLES_PER_SEC 1600
+#define PCM_SAMPLES_PER_SEC 5
 
 // DMA Input Buffer size in 16-bit Half Words (for 1 second):
 // 16000 * 4 (*2 for 2 16 bit and *2 for unused right channel) * 2 (Two Halves of Buffer) = 128000
@@ -22,11 +22,11 @@ const uint32_t DMA_HALF_SIZE = I2S_DMA_BUF_SIZE / 2;
 #define MAX_MIKRO 8000
 const uint32_t STEP = MAX_MIKRO / 10;
 
-#define SCHWELLWERT 6500
+#define SCHWELLWERT 7100
 
 
 // DMA Input Buffer: Stores the raw 16-bit data read by DMA.
-static volatile uint16_t inputBuffer[I2S_DMA_BUF_SIZE] = {0};
+static volatile uint16_t inputBuffer[I2S_DMA_BUF_SIZE*2] = {0};
 
 // Processed Output Array: Stores the final 16-bit mono PCM samples.
 static int16_t pcmSamples[PCM_SAMPLES_PER_SEC] = {0};
@@ -36,6 +36,8 @@ static int16_t pcmSamples[PCM_SAMPLES_PER_SEC] = {0};
 volatile uint32_t pcm_index = 0;
 volatile bool stecker_an = false;
 
+extern UART_HandleTypeDef* display;
+
 
 void HAL (I2S_HandleTypeDef* hi2s2) {
 	HAL_I2S_Receive_DMA(hi2s2, (uint16_t*)inputBuffer, I2S_DMA_BUF_SIZE);
@@ -43,18 +45,31 @@ void HAL (I2S_HandleTypeDef* hi2s2) {
 
 
 void getSamples () {
+	char buffer[16]; // temporary buffer for converting int16_t to string
+	    for (int i = 0; i < PCM_SAMPLES_PER_SEC; i++)
+	    {
+	        // Convert sample to string
+	        int len = sprintf(buffer, "%d\r\n", pcmSamples[i]);
+
+	        // Transmit string over UART
+	        HAL_UART_Transmit(display, (uint8_t*)buffer, len, HAL_MAX_DELAY);
+	    }
+
 	int16_t max_volume = 0;
 	uint32_t TimeBegin_ms = HAL_GetTick();
 		 		  for (int i = 0; i < PCM_SAMPLES_PER_SEC; i++)
 		 		  {
+		 			 //HAL_Delay(500);
 		 			  int numLED = abs(pcmSamples[i]);
 		 			  LED_ansteuern(numLED);
+		 			  //HAL_Delay(100);
 		 		    // Check if it surpasses the threshold
 		 		    if (abs(pcmSamples[i]) > SCHWELLWERT)
 		 		    {
 		 		        max_volume = abs(pcmSamples[i]);
 		 		        stecker_schalten();
-		 		    	HAL_GPIO_WritePin(LD1_GPIO_Port, LD1_Pin, GPIO_PIN_SET);
+		 		        //HAL_Delay(500);
+		 		    	//HAL_GPIO_WritePin(LD1_GPIO_Port, LD1_Pin, GPIO_PIN_SET);
 		 		    }
 		 		  }
 	uint32_t TimePassed_ms = TimeBegin_ms - HAL_GetTick();
@@ -100,9 +115,10 @@ void getSamples () {
 	        else {
 	                        // Stop recording once 16000 samples have been collected.
 	                        recording_finished = true;
-	                        HAL_I2S_DMAStop(hi2s2);
+	                        LED_ansteuern(10);
+	                        //HAL_I2S_DMAStop(hi2s2);
 	                        getSamples(); // Exit the loop
-	                        break;
+	                        //break;
 	        }
 	                }
 	}

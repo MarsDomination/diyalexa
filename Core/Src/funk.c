@@ -59,11 +59,11 @@ void delay350Microseconds(uint32_t n)
 
 void stecker_schalten () {
 	if (stecker_an) {
-		sendSequence("111111000001"); 		// aus
+		sendSequence("111111000010"); 		// aus
 		stecker_an = false;
 	}
 	else {
-		sendSequence("111111000010"); 		//an
+		sendSequence("111111000001"); 		//an
 		stecker_an = true;
 	}
 

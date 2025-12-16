@@ -41,6 +41,7 @@ extern "C" {
 /* Exported types ------------------------------------------------------------*/
 /* USER CODE BEGIN ET */
 extern volatile bool recording_finished;
+extern UART_HandleTypeDef* display;
 
 /* USER CODE END ET */
 
